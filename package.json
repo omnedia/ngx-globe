@@ -1,0 +1,26 @@
+{
+  "name": "@omnedia/ngx-globe",
+  "description": "A simple component library to create a container with an animated and interactive globe.",
+  "version": "1.0.0",
+  "peerDependencies": {
+    "@angular/common": "^18.2.0",
+    "@angular/core": "^18.2.0",
+    "cobe": "^0.6.3"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "npm",
+    "globe",
+    "3d",
+    "interactive",
+    "animation"
+  ],
+  "repository": {
+    "url": "https://github.com/omnedia/ngx-globe"
+  },
+  "author": "Markus Block (markus.block@omnedia.com)",
+  "license": "MIT"
+}

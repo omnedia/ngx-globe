@@ -1,0 +1,8 @@
+<div class="om-globe" [ngStyle]="style">
+    <div class="om-globe-background">
+        <canvas (pointerdown)="updatePointerInteraction($event.clientX - pointerInteractionMovement)"
+            (pointerup)="updatePointerInteraction(null)" (pointerout)="updatePointerInteraction(null)"
+            (mousemove)="updateMovement($event.clientX)" (touchmove)="updateMovement($event.touches[0].clientX)"
+            width="1000" height="1000" #globeCanvas></canvas>
+    </div>
+</div>

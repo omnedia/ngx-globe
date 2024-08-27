@@ -98,8 +98,8 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
     this.initGlobe();
 
     this.intersectionObserver = new IntersectionObserver(([entry]) => {
-      this.renderContents(entry.isIntersecting)
-    })
+      this.renderContents(entry.isIntersecting);
+    });
     this.intersectionObserver.observe(this.globeCanvas.nativeElement);
   }
 

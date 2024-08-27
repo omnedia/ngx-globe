@@ -1,18 +1,25 @@
-import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
-import { COBEOptionsPart, GlobeOptions } from './ngx-globe.types';
-import createGlobe from 'cobe';
-import Phenomenon from 'phenomenon';
+import { CommonModule } from "@angular/common";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  ViewChild,
+} from "@angular/core";
+import createGlobe from "cobe";
+import Phenomenon from "phenomenon";
+import { COBEOptionsPart, GlobeOptions } from "./ngx-globe.types";
 
 @Component({
-  selector: 'om-globe',
+  selector: "om-globe",
   standalone: true,
   imports: [CommonModule],
   templateUrl: "./ngx-globe.component.html",
   styleUrl: "./ngx-globe.component.scss",
 })
 export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('globeCanvas')
+  @ViewChild("globeCanvas")
   globeCanvas!: ElementRef<HTMLCanvasElement>;
 
   @Input("styleClass")
@@ -36,7 +43,7 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
     this.globeSize = size;
     this.cobeOptions.width = this.globeSize;
     this.cobeOptions.height = this.globeSize;
-    this.style["--globe-size"] = size + 'px';
+    this.style["--globe-size"] = size + "px";
 
     if (this.globeInitialized) {
       this.initGlobe();
@@ -90,6 +97,12 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.globe?.destroy();
+    window.removeEventListener("resize", () => this.setCanvasSize());
+  }
+
+  setCanvasSize(): void {
+    this.globeCanvas.nativeElement.width = this.globeSize;
+    this.globeCanvas.nativeElement.height = this.globeSize;
   }
 
   initGlobe(): void {
@@ -101,13 +114,15 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
           phi += this.rotationSpeed;
         }
 
-        state.phi = phi + this.globeRotation
+        state.phi = phi + this.globeRotation;
       },
-    }
+    };
 
     this.globe = createGlobe(this.globeCanvas.nativeElement, cobeOptions);
 
     this.globeInitialized = true;
+
+    window.addEventListener("resize", () => this.setCanvasSize());
 
     this.globeCanvas.nativeElement.width = this.globeSize;
     this.globeCanvas.nativeElement.height = this.globeSize;
@@ -116,7 +131,7 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
   updatePointerInteraction(value: any): void {
     this.pointerInteracting = value;
     this.globeCanvas.nativeElement.style.cursor = value ? "grabbing" : "grab";
-  };
+  }
 
   updateMovement(clientX: any): void {
     if (this.pointerInteracting !== null) {
@@ -124,26 +139,33 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
       this.pointerInteractionMovement = delta;
       this.globeRotation = delta / 200;
     }
-  };
+  }
 
   setGlobeOptions(options: GlobeOptions): void {
-    this.cobeOptions.width = options.width ?? this.cobeOptions.width
-    this.cobeOptions.height = options.height ?? this.cobeOptions.height
-    this.cobeOptions.phi = options.phi ?? this.cobeOptions.phi
-    this.cobeOptions.theta = options.theta ?? this.cobeOptions.theta
-    this.cobeOptions.mapSamples = options.mapSamples ?? this.cobeOptions.mapSamples
-    this.cobeOptions.mapBrightness = options.mapBrightness ?? this.cobeOptions.mapBrightness
-    this.cobeOptions.mapBaseBrightness = options.mapBaseBrightness ?? this.cobeOptions.mapBaseBrightness
-    this.cobeOptions.baseColor = options.baseColor ?? this.cobeOptions.baseColor
-    this.cobeOptions.markerColor = options.markerColor ?? this.cobeOptions.markerColor
-    this.cobeOptions.glowColor = options.glowColor ?? this.cobeOptions.glowColor
-    this.cobeOptions.markers = options.markers ?? this.cobeOptions.markers
-    this.cobeOptions.diffuse = options.diffuse ?? this.cobeOptions.diffuse
-    this.cobeOptions.devicePixelRatio = options.devicePixelRatio ?? this.cobeOptions.devicePixelRatio
-    this.cobeOptions.dark = options.dark ?? this.cobeOptions.dark
-    this.cobeOptions.opacity = options.opacity ?? this.cobeOptions.opacity
-    this.cobeOptions.offset = options.offset ?? this.cobeOptions.offset
-    this.cobeOptions.scale = options.scale ?? this.cobeOptions.scale
-    this.cobeOptions.context = options.context ?? this.cobeOptions.context
+    this.cobeOptions.width = options.width ?? this.cobeOptions.width;
+    this.cobeOptions.height = options.height ?? this.cobeOptions.height;
+    this.cobeOptions.phi = options.phi ?? this.cobeOptions.phi;
+    this.cobeOptions.theta = options.theta ?? this.cobeOptions.theta;
+    this.cobeOptions.mapSamples =
+      options.mapSamples ?? this.cobeOptions.mapSamples;
+    this.cobeOptions.mapBrightness =
+      options.mapBrightness ?? this.cobeOptions.mapBrightness;
+    this.cobeOptions.mapBaseBrightness =
+      options.mapBaseBrightness ?? this.cobeOptions.mapBaseBrightness;
+    this.cobeOptions.baseColor =
+      options.baseColor ?? this.cobeOptions.baseColor;
+    this.cobeOptions.markerColor =
+      options.markerColor ?? this.cobeOptions.markerColor;
+    this.cobeOptions.glowColor =
+      options.glowColor ?? this.cobeOptions.glowColor;
+    this.cobeOptions.markers = options.markers ?? this.cobeOptions.markers;
+    this.cobeOptions.diffuse = options.diffuse ?? this.cobeOptions.diffuse;
+    this.cobeOptions.devicePixelRatio =
+      options.devicePixelRatio ?? this.cobeOptions.devicePixelRatio;
+    this.cobeOptions.dark = options.dark ?? this.cobeOptions.dark;
+    this.cobeOptions.opacity = options.opacity ?? this.cobeOptions.opacity;
+    this.cobeOptions.offset = options.offset ?? this.cobeOptions.offset;
+    this.cobeOptions.scale = options.scale ?? this.cobeOptions.scale;
+    this.cobeOptions.context = options.context ?? this.cobeOptions.context;
   }
 }

@@ -91,8 +91,16 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
   pointerInteractionMovement = 0;
   private globeRotation = 0;
 
+  private intersectionObserver?: IntersectionObserver;
+  private isAnimating = false;
+
   ngAfterViewInit(): void {
     this.initGlobe();
+
+    this.intersectionObserver = new IntersectionObserver(([entry]) => {
+      this.renderContents(entry.isIntersecting)
+    })
+    this.intersectionObserver.observe(this.globeCanvas.nativeElement);
   }
 
   ngOnDestroy(): void {
@@ -103,6 +111,18 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
   setCanvasSize(): void {
     this.globeCanvas.nativeElement.width = this.globeSize;
     this.globeCanvas.nativeElement.height = this.globeSize;
+  }
+
+  renderContents(isIntersecting: boolean) {
+    if (isIntersecting && !this.isAnimating) {
+      this.isAnimating = true;
+
+      this.globe?.toggle(true);
+    } else if (!isIntersecting && this.isAnimating) {
+      this.isAnimating = false;
+
+      this.globe?.toggle(false);
+    }
   }
 
   initGlobe(): void {

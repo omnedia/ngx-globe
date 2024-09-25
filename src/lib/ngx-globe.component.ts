@@ -1,15 +1,8 @@
-import { CommonModule } from "@angular/common";
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  Input,
-  OnDestroy,
-  ViewChild,
-} from "@angular/core";
+import {CommonModule, isPlatformBrowser} from "@angular/common";
+import {AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, PLATFORM_ID, ViewChild,} from "@angular/core";
 import createGlobe from "cobe";
 import Phenomenon from "phenomenon";
-import { COBEOptionsPart, GlobeOptions } from "./ngx-globe.types";
+import {COBEOptionsPart, GlobeOptions} from "./ngx-globe.types";
 
 @Component({
   selector: "om-globe",
@@ -74,16 +67,16 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
     glowColor: [1, 1, 1],
     offset: [0, 0],
     markers: [
-      { location: [14.5995, 120.9842], size: 0.03 },
-      { location: [19.076, 72.8777], size: 0.1 },
-      { location: [23.8103, 90.4125], size: 0.05 },
-      { location: [30.0444, 31.2357], size: 0.07 },
-      { location: [39.9042, 116.4074], size: 0.08 },
-      { location: [-23.5505, -46.6333], size: 0.1 },
-      { location: [19.4326, -99.1332], size: 0.1 },
-      { location: [40.7128, -74.006], size: 0.1 },
-      { location: [34.6937, 135.5022], size: 0.05 },
-      { location: [41.0082, 28.9784], size: 0.06 },
+      {location: [14.5995, 120.9842], size: 0.03},
+      {location: [19.076, 72.8777], size: 0.1},
+      {location: [23.8103, 90.4125], size: 0.05},
+      {location: [30.0444, 31.2357], size: 0.07},
+      {location: [39.9042, 116.4074], size: 0.08},
+      {location: [-23.5505, -46.6333], size: 0.1},
+      {location: [19.4326, -99.1332], size: 0.1},
+      {location: [40.7128, -74.006], size: 0.1},
+      {location: [34.6937, 135.5022], size: 0.05},
+      {location: [41.0082, 28.9784], size: 0.06},
     ],
   };
 
@@ -94,13 +87,20 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
   private intersectionObserver?: IntersectionObserver;
   private isAnimating = false;
 
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: object
+  ) {
+  }
+
   ngAfterViewInit(): void {
     this.initGlobe();
 
-    this.intersectionObserver = new IntersectionObserver(([entry]) => {
-      this.renderContents(entry.isIntersecting);
-    });
-    this.intersectionObserver.observe(this.globeCanvas.nativeElement);
+    if (isPlatformBrowser(this.platformId)) {
+      this.intersectionObserver = new IntersectionObserver(([entry]) => {
+        this.renderContents(entry.isIntersecting);
+      });
+      this.intersectionObserver.observe(this.globeCanvas.nativeElement);
+    }
   }
 
   ngOnDestroy(): void {

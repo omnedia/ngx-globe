@@ -1,5 +1,13 @@
 ## ngx-globe
 
+<a href="https://ngxui.com" target="_blank" style="display: flex;gap: .5rem;align-items: center;cursor: pointer; padding: 0 0 0 0; height: fit-content;">
+  <img src="https://ngxui.com/assets/img/ngxui-logo.png" style="width: 64px;height: 64px;">
+  <p style="font-weight: bold; padding: 0; margin: 0; font-size: 4rem">NGXUI</p>
+</a>
+
+This Library is part of the NGXUI ecosystem. <br>
+View all available components at https://ngxui.com
+
 `@omnedia/ngx-globe` is an Angular library that provides an interactive 3D globe visualization. The globe is rendered using the cobe library, allowing for smooth animations, rotation, and customizable markers. This component is highly configurable, making it ideal for displaying geographic data or adding a dynamic visual element to your Angular application.
 
 ## Features
@@ -25,21 +33,23 @@ cobe is required as a peer dependency for this library to function properly.
 Import the `NgxGlobeComponent` in your Angular module or component:
 
 ```typescript
-import { NgxGlobeComponent } from '@omnedia/ngx-globe';
+import {NgxGlobeComponent} from '@omnedia/ngx-globe';
 
 @Component({
   ...
-  imports: [
-    ...
-    NgxGlobeComponent,
-  ],
+    imports:
+[
   ...
+    NgxGlobeComponent,
+],
+...
 })
 ```
 
 Use the component in your template:
 
 ```html
+
 <om-globe
   [rotationSpeed]="0.002"
   [globeSize]="800"
@@ -56,6 +66,7 @@ Use the component in your template:
 ## API
 
 ```html
+
 <om-globe
   [rotationSpeed]="rotationSpeed"
   [globeSize]="globeSize"
@@ -73,6 +84,7 @@ Use the component in your template:
 ## Example
 
 ```html
+
 <om-globe
   [rotationSpeed]="0.01"
   [globeSize]="500"

@@ -1,5 +1,16 @@
 import {CommonModule, isPlatformBrowser} from "@angular/common";
-import {AfterViewInit, Component, ElementRef, Inject, Input, OnDestroy, PLATFORM_ID, ViewChild,} from "@angular/core";
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Inject,
+  Input,
+  OnDestroy,
+  PLATFORM_ID,
+  ViewChild,
+} from "@angular/core";
 import createGlobe from "cobe";
 import Phenomenon from "phenomenon";
 import {COBEOptionsPart, GlobeOptions} from "./ngx-globe.types";
@@ -10,8 +21,12 @@ import {COBEOptionsPart, GlobeOptions} from "./ngx-globe.types";
   imports: [CommonModule],
   templateUrl: "./ngx-globe.component.html",
   styleUrl: "./ngx-globe.component.scss",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
+  @ViewChild("OmGlobeWrapper")
+  globeWrapperElement!: ElementRef<HTMLCanvasElement>;
+
   @ViewChild("globeCanvas")
   globeCanvas!: ElementRef<HTMLCanvasElement>;
 
@@ -24,9 +39,12 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
   @Input("globeOptions")
   set globeOptions(options: GlobeOptions) {
     this.globeSize = options.width ?? this.globeSize;
+    this.style["--globe-size"] = this.globeSize + "px";
+
     this.setGlobeOptions(options);
 
     if (this.globeInitialized) {
+      this.setCanvasSize();
       this.initGlobe();
     }
   }
@@ -39,13 +57,14 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
     this.style["--globe-size"] = size + "px";
 
     if (this.globeInitialized) {
+      this.setCanvasSize();
       this.initGlobe();
     }
   }
 
   style: any = {};
 
-  private globeSize = 600;
+  private globeSize?: number;
 
   private globeInitialized = false;
 
@@ -53,8 +72,8 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
 
   cobeOptions: COBEOptionsPart = {
     devicePixelRatio: 2,
-    width: this.globeSize,
-    height: this.globeSize,
+    width: this.globeSize ?? 600,
+    height: this.globeSize ?? 600,
     phi: 0,
     theta: 0.3,
     dark: 0,
@@ -88,12 +107,13 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
   private isAnimating = false;
 
   constructor(
+    private readonly cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: object
   ) {
   }
 
   ngAfterViewInit(): void {
-    this.initGlobe();
+    this.initCanvas();
 
     if (isPlatformBrowser(this.platformId)) {
       this.intersectionObserver = new IntersectionObserver(([entry]) => {
@@ -105,12 +125,38 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.globe?.destroy();
-    window.removeEventListener("resize", () => this.setCanvasSize());
+  }
+
+  initCanvas(): void {
+    if (!this.globeSize) {
+      let width = 600;
+      let height = 600;
+
+      if (this.globeWrapperElement.nativeElement.parentElement?.parentElement) {
+        const domRect = this.globeWrapperElement.nativeElement.parentElement!.parentElement!.getBoundingClientRect();
+        width = domRect.width;
+        height = domRect.height;
+      }
+
+      this.globeSize = width < height ? width : height;
+
+      this.cobeOptions.width = this.globeSize;
+      this.cobeOptions.height = this.globeSize;
+      this.style["--globe-size"] = this.globeSize + "px";
+    }
+
+    this.cobeOptions.width = this.globeSize;
+    this.cobeOptions.height = this.globeSize;
+
+    this.setCanvasSize();
+    this.initGlobe();
   }
 
   setCanvasSize(): void {
-    this.globeCanvas.nativeElement.width = this.globeSize;
-    this.globeCanvas.nativeElement.height = this.globeSize;
+    this.globeCanvas.nativeElement.width = this.globeSize ?? 600;
+    this.globeCanvas.nativeElement.height = this.globeSize ?? 600;
+
+    this.cdr.detectChanges();
   }
 
   renderContents(isIntersecting: boolean) {
@@ -142,10 +188,8 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
 
     this.globeInitialized = true;
 
-    window.addEventListener("resize", () => this.setCanvasSize());
-
-    this.globeCanvas.nativeElement.width = this.globeSize;
-    this.globeCanvas.nativeElement.height = this.globeSize;
+    this.globeCanvas.nativeElement.width = this.globeSize ?? 600;
+    this.globeCanvas.nativeElement.height = this.globeSize ?? 600;
   }
 
   updatePointerInteraction(value: any): void {

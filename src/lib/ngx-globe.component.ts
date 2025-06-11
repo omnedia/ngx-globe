@@ -125,6 +125,7 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.globe?.destroy();
+    window.removeEventListener("resize", () => this.setCanvasSize());
   }
 
   initCanvas(): void {
@@ -187,6 +188,8 @@ export class NgxGlobeComponent implements AfterViewInit, OnDestroy {
     this.globe = createGlobe(this.globeCanvas.nativeElement, cobeOptions);
 
     this.globeInitialized = true;
+
+    window.addEventListener("resize", () => this.setCanvasSize());
 
     this.globeCanvas.nativeElement.width = this.globeSize ?? 600;
     this.globeCanvas.nativeElement.height = this.globeSize ?? 600;
